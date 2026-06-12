@@ -1,17 +1,26 @@
 import { Button } from "@/components/ui/button"
 
+// Dashboard shell. Router + pages (Dashboard, Timeline, Analytics, Insights)
+// land in Phase 5; this is the placeholder the dashboard page mounts.
 export function App() {
   return (
-    <div className="flex min-h-svh p-6">
-      <div className="flex max-w-md min-w-0 flex-col gap-4 text-sm leading-loose">
-        <div>
-          <h1 className="font-medium">Project ready!</h1>
-          <p>You may now add components and start building.</p>
-          <p>We&apos;ve already added the button component for you.</p>
-          <Button className="mt-2">Button</Button>
-        </div>
+    <div className="min-h-svh bg-background p-6 text-foreground">
+      <div className="mx-auto flex max-w-3xl flex-col gap-4">
+        <header>
+          <h1 className="text-xl font-medium">WebTimeline</h1>
+          <p className="text-sm text-muted-foreground">
+            Privacy-first browsing timeline & analytics — all local, no cloud.
+          </p>
+        </header>
+        <p className="text-sm text-muted-foreground">
+          The dashboard is scaffolded. Cards, timeline, and charts arrive in
+          Phases 5–6.
+        </p>
         <div className="font-mono text-xs text-muted-foreground">
           (Press <kbd>d</kbd> to toggle dark mode)
+        </div>
+        <div>
+          <Button>Button</Button>
         </div>
       </div>
     </div>
