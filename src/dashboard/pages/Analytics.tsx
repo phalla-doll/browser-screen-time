@@ -23,8 +23,9 @@ import { getVisitsBetween } from "@/lib/db/repository"
 import { formatDuration } from "@/lib/format"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
+import { ContributionGraph } from "../components/ContributionGraph"
 import { Favicon } from "../components/Favicon"
-import { useTodayVisits } from "../use-today"
+import { useContributionVisits, useTodayVisits } from "../use-today"
 
 const DAY_MS = 24 * 60 * 60 * 1000
 const toMin = (ms: number) => Math.round(ms / 60_000)
@@ -147,6 +148,7 @@ function ChartCard({
 
 export function Analytics() {
   const today = useTodayVisits()
+  const yearVisits = useContributionVisits()
   const days = lastWeekDays()
   const weekStart = days[0].getTime()
   const week = useLiveQuery(
@@ -284,6 +286,21 @@ export function Analytics() {
                 </span>
               </div>
             ))
+          )}
+        </CardContent>
+      </Card>
+
+      <Card className="lg:col-span-2">
+        <CardHeader>
+          <CardTitle>Activity (last 6 months)</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {yearVisits === undefined ? (
+            <p className="py-8 text-center text-sm text-muted-foreground">
+              Loading…
+            </p>
+          ) : (
+            <ContributionGraph visits={yearVisits} />
           )}
         </CardContent>
       </Card>
