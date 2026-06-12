@@ -487,7 +487,7 @@ Optional:
 
 ## Browser Extension
 
-- Plasmo
+- Vite + @crxjs/vite-plugin (MV3)
 - React
 - TypeScript
 - TailwindCSS
@@ -520,8 +520,8 @@ Optional Cloud:
 ## Analytics
 
 - Recharts
-- D3.js
-- React Flow
+- D3.js (planned)
+- React Flow (planned)
 
 ---
 
