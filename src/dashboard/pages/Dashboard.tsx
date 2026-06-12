@@ -9,7 +9,6 @@ import { categoryColor } from "@/lib/category-colors"
 import { getVisitsBetween } from "@/lib/db/repository"
 import { formatDuration } from "@/lib/format"
 import { Card, CardDescription, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 
 import { Favicon } from "../components/Favicon"
 import { Sparkline } from "../components/Sparkline"
@@ -155,9 +154,12 @@ export function Dashboard() {
         title="Top category"
         value={
           topCategory ? (
-            <Badge className={categoryColor(topCategory.key).chip}>
+            <span
+              className="truncate"
+              style={{ color: categoryColor(topCategory.key).hex }}
+            >
               {topCategory.key}
-            </Badge>
+            </span>
           ) : (
             "—"
           )
