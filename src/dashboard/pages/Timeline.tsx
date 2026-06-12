@@ -5,6 +5,14 @@ import type { Visit } from "@/lib/db/db"
 import { categoryColor } from "@/lib/category-colors"
 import { formatClock, formatDuration } from "@/lib/format"
 import { Badge } from "@/components/ui/badge"
+import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 import { useTodayVisits } from "../use-today"
 
@@ -62,27 +70,31 @@ export function Timeline() {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center gap-2">
-        <input
+        <Input
           type="search"
           value={search}
           onChange={(event) => setSearch(event.target.value)}
           placeholder="Search site or title…"
-          className="h-9 w-56 rounded-md border border-border bg-background px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+          className="w-56"
         />
-        <select
+        <Select
           value={category}
-          onChange={(event) =>
-            setCategory(event.target.value as typeof ALL | Category)
+          onValueChange={(value) =>
+            setCategory(value as typeof ALL | Category)
           }
-          className="h-9 rounded-md border border-border bg-background px-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
         >
-          <option value={ALL}>All categories</option>
-          {CATEGORIES.map((c) => (
-            <option key={c} value={c}>
-              {c}
-            </option>
-          ))}
-        </select>
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={ALL}>All categories</SelectItem>
+            {CATEGORIES.map((c) => (
+              <SelectItem key={c} value={c}>
+                {c}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
         <span className="text-xs text-muted-foreground">
           {filtered.length} visit{filtered.length === 1 ? "" : "s"}
         </span>
