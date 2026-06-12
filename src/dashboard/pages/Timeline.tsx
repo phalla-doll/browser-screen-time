@@ -184,17 +184,19 @@ export function Timeline() {
                           </div>
                         </div>
                       </div>
-                      <div className="flex shrink-0 items-center gap-2">
-                        <Badge className={color.chip}>{row.category}</Badge>
-                        <div className="flex flex-col items-end">
-                          <span className="font-mono text-xs">
+                      <div className="flex shrink-0 items-center gap-3">
+                        <div className="flex flex-col items-end leading-tight">
+                          <span className="font-mono text-sm font-medium tabular-nums">
                             {formatDuration(row.duration)}
                           </span>
-                          <span className="text-xs text-muted-foreground">
+                          <span className="font-mono text-[11px] tabular-nums text-muted-foreground">
                             {row.count > 1
                               ? `${formatClock(row.startTs)} – ${formatClock(row.lastTs)}`
                               : formatClock(row.startTs)}
                           </span>
+                        </div>
+                        <div className="flex w-28 justify-end">
+                          <Badge className={color.chip}>{row.category}</Badge>
                         </div>
                       </div>
                     </li>
