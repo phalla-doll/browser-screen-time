@@ -5,7 +5,6 @@ import {
   BarChart,
   CartesianGrid,
   Cell,
-  Legend,
   Line,
   LineChart,
   Pie,
@@ -277,7 +276,6 @@ export function Analytics() {
               contentStyle={tooltipStyle}
               formatter={(value, name) => [`${value}m`, name]}
             />
-            <Legend wrapperStyle={{ fontSize: 12 }} />
             {activeCategories.map((name) => (
               <Line
                 key={name}
