@@ -318,7 +318,7 @@ export function Analytics() {
 
       <Card className="lg:col-span-2">
         <CardHeader>
-          <CardTitle>Activity (last 6 months)</CardTitle>
+          <CardTitle>Activity (last 8 months)</CardTitle>
         </CardHeader>
         <CardContent>
           {yearVisits === undefined ? (

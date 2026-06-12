@@ -47,7 +47,7 @@ function levelFor(total: number, max: number): number {
 }
 
 // Group visits into a grid of weeks (columns) × weekdays (rows), GitHub-style:
-// the window ends today and starts on the Sunday ~53 weeks back.
+// the window ends today and starts on the Sunday ~35 weeks back.
 function buildWeeks(visits: Visit[]): Day[][] {
   const totals = new Map<number, number>()
   for (const visit of visits) {
@@ -56,7 +56,7 @@ function buildWeeks(visits: Visit[]): Day[][] {
   }
 
   const end = startOfDay(new Date()) // today
-  const start = startOfDay(new Date(end.getTime() - 182 * DAY_MS)) // ~6 months
+  const start = startOfDay(new Date(end.getTime() - 243 * DAY_MS)) // ~8 months
   start.setDate(start.getDate() - start.getDay()) // back to Sunday
 
   const max = Math.max(0, ...totals.values())
@@ -143,7 +143,7 @@ export function ContributionGraph({ visits }: { visits: Visit[] }) {
           width="100%"
           height={height}
           role="img"
-          aria-label="Browsing activity over the last 6 months"
+          aria-label="Browsing activity over the last 8 months"
         >
           {labels.map((m) => (
             <text
