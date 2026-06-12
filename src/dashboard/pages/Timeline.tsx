@@ -155,7 +155,7 @@ export function Timeline() {
               <div className="w-14 shrink-0 pt-2 text-xs font-medium text-muted-foreground">
                 {group.hour}
               </div>
-              <ul className="flex-1 divide-y divide-border rounded-lg border border-border">
+              <ul className="min-w-0 flex-1 divide-y divide-border rounded-lg border border-border">
                 {group.rows.map((row) => {
                   const color = categoryColor(row.category)
                   return (
@@ -163,7 +163,7 @@ export function Timeline() {
                       key={row.id}
                       className="flex items-center justify-between gap-3 px-3 py-2"
                     >
-                      <div className="flex min-w-0 items-center gap-2">
+                      <div className="flex min-w-0 flex-1 items-center gap-2">
                         <Favicon src={row.favIconUrl} domain={row.domain} />
                         <div className="min-w-0">
                           <div className="flex items-center gap-1.5 truncate text-sm font-medium">
