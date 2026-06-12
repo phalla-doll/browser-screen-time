@@ -123,9 +123,12 @@ export function Timeline() {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center gap-2">
-        <span className="text-xs text-muted-foreground">
-          {filtered.length} visit{filtered.length === 1 ? "" : "s"}
-        </span>
+        <h2 className="text-sm font-medium text-muted-foreground">
+          Timeline
+          <span className="ml-2 font-normal text-muted-foreground/70">
+            {filtered.length} visit{filtered.length === 1 ? "" : "s"}
+          </span>
+        </h2>
         <Input
           type="search"
           value={search}

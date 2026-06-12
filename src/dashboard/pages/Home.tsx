@@ -12,9 +12,6 @@ export function Home() {
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-12">
         <section className="flex flex-col gap-3 xl:col-span-7">
-          <h2 className="text-sm font-medium text-muted-foreground">
-            Timeline
-          </h2>
           <Timeline />
         </section>
 
