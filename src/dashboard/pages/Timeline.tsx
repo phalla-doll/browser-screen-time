@@ -38,12 +38,15 @@ interface TimelineRow {
   count: number
 }
 
-// Collapse runs of consecutive same-URL visits into one row each.
+// Collapse runs of consecutive visits to the same page into one row each.
+// "Same page" means same domain + title: distinct URLs under one site that
+// share a title (e.g. a feed reloading) read as one entry to the user, while
+// genuinely different pages stay separate.
 function mergeRuns(visits: Visit[]): TimelineRow[] {
   const rows: TimelineRow[] = []
   for (const visit of visits) {
     const last = rows[rows.length - 1]
-    if (last && last.url === visit.url) {
+    if (last && last.domain === visit.domain && last.title === visit.title) {
       last.duration += visit.duration
       last.lastTs = visit.startTs
       last.count += 1
