@@ -12,6 +12,7 @@ export interface Visit {
   endTs: number
   duration: number // milliseconds
   category: Category
+  favIconUrl?: string // captured from the tab when available
   sessionId?: number // assigned in Phase 4
 }
 

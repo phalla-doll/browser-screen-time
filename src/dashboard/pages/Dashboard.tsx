@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 
+import { Favicon } from "../components/Favicon"
 import { useTodayVisits } from "../use-today"
 
 function topByDuration<K extends string>(
@@ -74,6 +75,10 @@ export function Dashboard() {
   const deepWork = summarizeDeepWork(buildSessions(visits))
   const topCategory = topByDuration(visits, (v) => v.category as Category)
   const topDomain = topByDuration(visits, (v) => v.domain)
+  const topDomainIcon = topDomain
+    ? visits.findLast((v) => v.domain === topDomain.key && v.favIconUrl)
+        ?.favIconUrl
+    : undefined
 
   return (
     <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
@@ -107,7 +112,20 @@ export function Dashboard() {
       />
       <MetricCard
         title="Most visited site"
-        value={<span className="truncate text-xl">{topDomain?.key ?? "—"}</span>}
+        value={
+          topDomain ? (
+            <span className="flex min-w-0 items-center gap-2">
+              <Favicon
+                src={topDomainIcon}
+                domain={topDomain.key}
+                className="size-5"
+              />
+              <span className="truncate text-xl">{topDomain.key}</span>
+            </span>
+          ) : (
+            "—"
+          )
+        }
         detail={topDomain ? formatDuration(topDomain.duration) : undefined}
       />
     </div>

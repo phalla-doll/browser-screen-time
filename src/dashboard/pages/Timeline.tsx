@@ -14,6 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
+import { Favicon } from "../components/Favicon"
 import { useTodayVisits } from "../use-today"
 
 const ALL = "All"
@@ -22,15 +23,60 @@ function hourLabel(ts: number): string {
   return new Date(ts).toLocaleTimeString([], { hour: "2-digit" })
 }
 
-function groupByHour(visits: Visit[]): { hour: string; visits: Visit[] }[] {
-  const groups: { hour: string; visits: Visit[] }[] = []
+// A row in the timeline. Consecutive visits to the same page are folded into a
+// single row (summed duration, a count, and the span they cover).
+interface TimelineRow {
+  id: number
+  domain: string
+  title: string
+  url: string
+  category: Category
+  favIconUrl?: string
+  startTs: number
+  lastTs: number
+  duration: number
+  count: number
+}
+
+// Collapse runs of consecutive same-URL visits into one row each.
+function mergeRuns(visits: Visit[]): TimelineRow[] {
+  const rows: TimelineRow[] = []
   for (const visit of visits) {
-    const hour = hourLabel(visit.startTs)
+    const last = rows[rows.length - 1]
+    if (last && last.url === visit.url) {
+      last.duration += visit.duration
+      last.lastTs = visit.startTs
+      last.count += 1
+      // The freshest title/favicon usually arrives on a later visit.
+      if (visit.title) last.title = visit.title
+      if (visit.favIconUrl) last.favIconUrl = visit.favIconUrl
+    } else {
+      rows.push({
+        id: visit.id,
+        domain: visit.domain,
+        title: visit.title,
+        url: visit.url,
+        category: visit.category,
+        favIconUrl: visit.favIconUrl,
+        startTs: visit.startTs,
+        lastTs: visit.startTs,
+        duration: visit.duration,
+        count: 1,
+      })
+    }
+  }
+  return rows
+}
+
+function groupByHour(rows: TimelineRow[]): { hour: string; rows: TimelineRow[] }[] {
+  const groups: { hour: string; rows: TimelineRow[] }[] = []
+  for (const row of rows) {
+    const hour = hourLabel(row.startTs)
     const last = groups[groups.length - 1]
     if (last && last.hour === hour) {
-      last.visits.push(visit)
+      last.rows.push(row)
     } else {
-      groups.push({ hour, visits: [visit] })
+      groups.push({ hour, rows: [row] })
     }
   }
   return groups
@@ -61,7 +107,7 @@ export function Timeline() {
     })
   }, [visits, search, category])
 
-  const groups = useMemo(() => groupByHour(filtered), [filtered])
+  const groups = useMemo(() => groupByHour(mergeRuns(filtered)), [filtered])
 
   if (visits === undefined) {
     return <p className="text-sm text-muted-foreground">Loading…</p>
@@ -110,35 +156,39 @@ export function Timeline() {
                 {group.hour}
               </div>
               <ul className="flex-1 divide-y divide-border rounded-lg border border-border">
-                {group.visits.map((visit) => {
-                  const color = categoryColor(visit.category)
+                {group.rows.map((row) => {
+                  const color = categoryColor(row.category)
                   return (
                     <li
-                      key={visit.id}
+                      key={row.id}
                       className="flex items-center justify-between gap-3 px-3 py-2"
                     >
                       <div className="flex min-w-0 items-center gap-2">
-                        <span
-                          className={`size-2 shrink-0 rounded-full ${color.dot}`}
-                          aria-hidden
-                        />
+                        <Favicon src={row.favIconUrl} domain={row.domain} />
                         <div className="min-w-0">
-                          <div className="truncate text-sm font-medium">
-                            {visit.domain}
+                          <div className="flex items-center gap-1.5 truncate text-sm font-medium">
+                            {row.domain}
+                            {row.count > 1 ? (
+                              <span className="shrink-0 rounded bg-muted px-1 py-0.5 font-mono text-[10px] font-normal text-muted-foreground">
+                                ×{row.count}
+                              </span>
+                            ) : null}
                           </div>
                           <div className="truncate text-xs text-muted-foreground">
-                            {visit.title}
+                            {row.title}
                           </div>
                         </div>
                       </div>
                       <div className="flex shrink-0 items-center gap-2">
-                        <Badge className={color.chip}>{visit.category}</Badge>
+                        <Badge className={color.chip}>{row.category}</Badge>
                         <div className="flex flex-col items-end">
                           <span className="font-mono text-xs">
-                            {formatDuration(visit.duration)}
+                            {formatDuration(row.duration)}
                           </span>
                           <span className="text-xs text-muted-foreground">
-                            {formatClock(visit.startTs)}
+                            {row.count > 1
+                              ? `${formatClock(row.startTs)} – ${formatClock(row.lastTs)}`
+                              : formatClock(row.startTs)}
                           </span>
                         </div>
                       </div>

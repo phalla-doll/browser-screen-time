@@ -29,6 +29,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 
+import { Favicon } from "../components/Favicon"
 import { useTodayVisits } from "../use-today"
 
 const DAY_MS = 24 * 60 * 60 * 1000
@@ -75,11 +76,20 @@ function sumByHour(visits: Visit[]) {
 
 function topSites(visits: Visit[]) {
   const totals = new Map<string, number>()
+  const icons = new Map<string, string>()
   for (const visit of visits) {
     totals.set(visit.domain, (totals.get(visit.domain) ?? 0) + visit.duration)
+    // Visits arrive chronologically, so the latest favicon wins.
+    if (visit.favIconUrl) {
+      icons.set(visit.domain, visit.favIconUrl)
+    }
   }
   return [...totals.entries()]
-    .map(([domain, duration]) => ({ domain, duration }))
+    .map(([domain, duration]) => ({
+      domain,
+      duration,
+      favIconUrl: icons.get(domain),
+    }))
     .sort((a, b) => b.duration - a.duration)
     .slice(0, 5)
 }
@@ -280,7 +290,10 @@ export function Analytics() {
                   key={s.domain}
                   className="flex items-center justify-between gap-2 text-sm"
                 >
-                  <span className="truncate">{s.domain}</span>
+                  <div className="flex min-w-0 items-center gap-2">
+                    <Favicon src={s.favIconUrl} domain={s.domain} />
+                    <span className="truncate">{s.domain}</span>
+                  </div>
                   <span className="shrink-0 font-mono text-xs text-muted-foreground">
                     {formatDuration(s.duration)}
                   </span>

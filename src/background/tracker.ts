@@ -1,5 +1,6 @@
 import { categorize } from "@/lib/categorization/categorize"
 import { getRegistrableDomain } from "@/lib/categorization/domain"
+import type { Visit } from "@/lib/db/db"
 import { addVisit, deleteVisit, updateVisit } from "@/lib/db/repository"
 
 import {
@@ -25,6 +26,7 @@ function isTrackable(url: string | undefined): url is string {
 async function openVisit(
   url: string,
   title: string | undefined,
+  favIconUrl: string | undefined,
   now: number
 ): Promise<void> {
   const domain = getRegistrableDomain(url)
@@ -39,6 +41,7 @@ async function openVisit(
     endTs: now,
     duration: 0,
     category: categorize(domain),
+    favIconUrl: favIconUrl?.trim() || undefined,
   })
   await setActiveVisit({ id, domain, url, startTs: now })
 }
@@ -71,17 +74,24 @@ async function handleTab(
     return
   }
 
-  // Same page still in front — just keep the title fresh (it often arrives
-  // after the initial navigation event).
+  // Same page still in front — just keep the title and favicon fresh (both
+  // often arrive after the initial navigation event).
   if (active && active.url === tab.url) {
+    const changes: Partial<Visit> = {}
     if (tab.title?.trim()) {
-      await updateVisit(active.id, { title: tab.title.trim() })
+      changes.title = tab.title.trim()
+    }
+    if (tab.favIconUrl?.trim()) {
+      changes.favIconUrl = tab.favIconUrl.trim()
+    }
+    if (Object.keys(changes).length > 0) {
+      await updateVisit(active.id, changes)
     }
     return
   }
 
   await closeVisit(now)
-  await openVisit(tab.url, tab.title, now)
+  await openVisit(tab.url, tab.title, tab.favIconUrl, now)
 }
 
 // Query the focused window's active tab and reconcile against it. No-op while
