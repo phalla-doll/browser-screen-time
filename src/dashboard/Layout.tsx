@@ -5,7 +5,7 @@ export function Layout() {
     <div className="min-h-svh bg-background text-foreground">
       <header className="border-b border-border">
         <div className="mx-auto max-w-[96rem] px-8 py-4">
-          <h1 className="text-lg font-medium">WebTimeline</h1>
+          <h1 className="text-lg font-medium">Browser Screen Time</h1>
           <p className="text-xs text-muted-foreground">
             Privacy-first browsing timeline & analytics — all local.
           </p>

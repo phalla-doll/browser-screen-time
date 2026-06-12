@@ -1,12 +1,12 @@
-# WebTimeline
+# Browser Screen Time
 
 Apple Screen Time for Browsing + Timeline + AI Insights
 
 ## Overview
 
-WebTimeline is a privacy-first Chromium browser extension that automatically tracks browsing activity, categorizes websites, reconstructs browsing sessions, generates timeline reports, and provides AI-powered insights about online behavior.
+Browser Screen Time is a privacy-first Chromium browser extension that automatically tracks browsing activity, categorizes websites, reconstructs browsing sessions, generates timeline reports, and provides AI-powered insights about online behavior.
 
-Unlike traditional screen-time trackers that only measure time spent, WebTimeline visualizes how users move across the web.
+Unlike traditional screen-time trackers that only measure time spent, Browser Screen Time visualizes how users move across the web.
 
 Example:
 
@@ -22,7 +22,7 @@ Users can replay their browsing history, understand work patterns, identify dist
 
 ## Project Status
 
-WebTimeline currently ships a **fully local, offline MVP**: activity tracking → local storage → categorization → session reconstruction → a dashboard with timeline and analytics. There is **no cloud and no AI yet** — those remain planned (see [Planned (deferred)](#planned-deferred)).
+Browser Screen Time currently ships a **fully local, offline MVP**: activity tracking → local storage → categorization → session reconstruction → a dashboard with timeline and analytics. There is **no cloud and no AI yet** — those remain planned (see [Planned (deferred)](#planned-deferred)).
 
 Most of this document describes the long-term product vision. The sections below describe what is actually implemented today.
 
@@ -670,7 +670,7 @@ Team ($8/user/month)
 
 # Vision
 
-WebTimeline helps users understand not just how much time they spend online, but how they navigate the web, how they work, and where their attention goes.
+Browser Screen Time helps users understand not just how much time they spend online, but how they navigate the web, how they work, and where their attention goes.
 
 Think:
 

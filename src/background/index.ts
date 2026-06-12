@@ -1,4 +1,4 @@
-// WebTimeline background service worker.
+// Browser Screen Time background service worker.
 //
 // Captures raw browsing activity and persists it as "visits" (Phase 1) using
 // the shared Dexie store + categorization (Phases 2–3). Listeners are
@@ -6,6 +6,7 @@
 // each event.
 
 import { rebuildSessionsForDay } from "@/lib/analytics/persist"
+import { migrateLegacyDatabase } from "@/lib/db/db"
 
 import { checkpoint, pause, resume, syncActiveTab } from "./tracker"
 
@@ -22,14 +23,14 @@ function ensureFlushAlarm() {
 }
 
 chrome.runtime.onInstalled.addListener((details) => {
-  console.log("[WebTimeline] installed:", details.reason)
+  console.log("[BrowserScreenTime] installed:", details.reason)
   ensureFlushAlarm()
-  void syncActiveTab(now())
+  void migrateLegacyDatabase().finally(() => syncActiveTab(now()))
 })
 
 chrome.runtime.onStartup.addListener(() => {
   ensureFlushAlarm()
-  void syncActiveTab(now())
+  void migrateLegacyDatabase().finally(() => syncActiveTab(now()))
 })
 
 // Active tab changed within a window.
@@ -78,4 +79,4 @@ chrome.alarms.onAlarm.addListener((alarm) => {
 ensureFlushAlarm()
 void syncActiveTab(now())
 
-console.log("[WebTimeline] background service worker booted")
+console.log("[BrowserScreenTime] background service worker booted")

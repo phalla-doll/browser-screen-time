@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-WebTimeline is a privacy-first Chromium MV3 extension that tracks browsing
+Browser Screen Time is a privacy-first Chromium MV3 extension that tracks browsing
 activity locally, categorizes sites, reconstructs sessions, and renders a
 timeline + analytics dashboard. It ships a **fully local, offline MVP** — there
 is **no cloud and no AI yet**. Most of `README.md` describes the long-term

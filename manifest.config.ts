@@ -6,7 +6,7 @@ import pkg from "./package.json"
 // rewrites them to the built asset paths at bundle time.
 export default defineManifest({
   manifest_version: 3,
-  name: "WebTimeline",
+  name: "Browser Screen Time",
   version: pkg.version,
   description:
     "Privacy-first browsing activity timeline, categorization & analytics. Local-only, no cloud.",
@@ -23,7 +23,7 @@ export default defineManifest({
   },
   action: {
     default_popup: "src/popup/index.html",
-    default_title: "WebTimeline",
+    default_title: "Browser Screen Time",
     default_icon: {
       16: "icons/icon-16.png",
       32: "icons/icon-32.png",

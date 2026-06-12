@@ -1,4 +1,4 @@
-# WebTimeline — Local MVP Implementation Plan
+# Browser Screen Time — Local MVP Implementation Plan
 
 ## Context
 

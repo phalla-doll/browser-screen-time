@@ -11,7 +11,7 @@ export function Popup() {
     <div className="w-72 bg-background p-4 text-foreground">
       <div className="flex flex-col gap-3">
         <div>
-          <h1 className="text-sm font-medium">WebTimeline</h1>
+          <h1 className="text-sm font-medium">Browser Screen Time</h1>
           <p className="text-xs text-muted-foreground">
             Local activity tracking is running. Stats arrive in a later phase.
           </p>
