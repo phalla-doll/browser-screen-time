@@ -29,10 +29,7 @@ export async function rebuildSessionsForDay(date: Date): Promise<void> {
         endTs: session.endTs,
         category: session.dominantCategory,
       })
-      await db.visits
-        .where("id")
-        .anyOf(session.visitIds)
-        .modify({ sessionId })
+      await db.visits.where("id").anyOf(session.visitIds).modify({ sessionId })
     }
   })
 }

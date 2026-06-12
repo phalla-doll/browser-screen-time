@@ -3,12 +3,7 @@ import { getRegistrableDomain } from "@/lib/categorization/domain"
 import type { Visit } from "@/lib/db/db"
 import { addVisit, deleteVisit, updateVisit } from "@/lib/db/repository"
 
-import {
-  getActiveVisit,
-  isPaused,
-  setActiveVisit,
-  setPaused,
-} from "./state"
+import { getActiveVisit, isPaused, setActiveVisit, setPaused } from "./state"
 
 // Visits shorter than this are treated as fly-through navigation and discarded.
 const MIN_DURATION_MS = 1000

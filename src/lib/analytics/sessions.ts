@@ -54,10 +54,9 @@ function summarize(visits: Visit[]): SessionStats {
     }
   })
 
-  const dominantCategory = (Object.entries(categoryBreakdown) as [
-    Category,
-    number,
-  ][]).reduce((best, entry) => (entry[1] > best[1] ? entry : best))[0]
+  const dominantCategory = (
+    Object.entries(categoryBreakdown) as [Category, number][]
+  ).reduce((best, entry) => (entry[1] > best[1] ? entry : best))[0]
 
   return {
     startTs,

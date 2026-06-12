@@ -12,8 +12,18 @@ describe("buildSessions", () => {
 
   it("groups visits within the idle gap into one session", () => {
     const sessions = buildSessions([
-      makeVisit({ domain: "github.com", category: "Development", startMin: 0, durMin: 20 }),
-      makeVisit({ domain: "claude.ai", category: "AI", startMin: 25, durMin: 10 }),
+      makeVisit({
+        domain: "github.com",
+        category: "Development",
+        startMin: 0,
+        durMin: 20,
+      }),
+      makeVisit({
+        domain: "claude.ai",
+        category: "AI",
+        startMin: 25,
+        durMin: 10,
+      }),
     ])
 
     expect(sessions).toHaveLength(1)
@@ -25,9 +35,19 @@ describe("buildSessions", () => {
 
   it("splits on an idle gap larger than the threshold", () => {
     const sessions = buildSessions([
-      makeVisit({ domain: "github.com", category: "Development", startMin: 0, durMin: 20 }),
+      makeVisit({
+        domain: "github.com",
+        category: "Development",
+        startMin: 0,
+        durMin: 20,
+      }),
       // starts 40 min after the previous visit ended → new session
-      makeVisit({ domain: "youtube.com", category: "Entertainment", startMin: 60, durMin: 15 }),
+      makeVisit({
+        domain: "youtube.com",
+        category: "Entertainment",
+        startMin: 60,
+        durMin: 15,
+      }),
     ])
 
     expect(sessions).toHaveLength(2)
@@ -38,8 +58,18 @@ describe("buildSessions", () => {
 
   it("computes a partial focus score and dominant category", () => {
     const [session] = buildSessions([
-      makeVisit({ domain: "github.com", category: "Development", startMin: 0, durMin: 30 }),
-      makeVisit({ domain: "youtube.com", category: "Entertainment", startMin: 30, durMin: 10 }),
+      makeVisit({
+        domain: "github.com",
+        category: "Development",
+        startMin: 0,
+        durMin: 30,
+      }),
+      makeVisit({
+        domain: "youtube.com",
+        category: "Entertainment",
+        startMin: 30,
+        durMin: 10,
+      }),
     ])
 
     expect(session.focusScore).toBeCloseTo(0.75)

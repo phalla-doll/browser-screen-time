@@ -16,18 +16,12 @@ import {
 } from "recharts"
 
 import { summarizeFocus } from "@/lib/analytics/metrics"
-import { CATEGORIES, type Category } from "@/lib/categorization/categorize"
+import { CATEGORIES } from "@/lib/categorization/categorize"
 import type { Visit } from "@/lib/db/db"
 import { categoryColor } from "@/lib/category-colors"
 import { getVisitsBetween } from "@/lib/db/repository"
 import { formatDuration } from "@/lib/format"
-import { Badge } from "@/components/ui/badge"
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 import { Favicon } from "../components/Favicon"
 import { useTodayVisits } from "../use-today"
@@ -69,7 +63,10 @@ function sumByHour(visits: Visit[]) {
   const to = Math.max(...active)
   const data = []
   for (let hour = from; hour <= to; hour += 1) {
-    data.push({ label: `${hour}`.padStart(2, "0"), minutes: toMin(byHour[hour]) })
+    data.push({
+      label: `${hour}`.padStart(2, "0"),
+      minutes: toMin(byHour[hour]),
+    })
   }
   return data
 }
@@ -165,11 +162,13 @@ export function Analytics() {
   const hourData = sumByHour(today)
   const weekData = weeklyData(week, days)
   const sites = topSites(today)
-  const totalToday = today.reduce((sum, v) => sum + v.duration, 0)
 
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-      <ChartCard title="Time by category (today)" empty={categoryData.length === 0}>
+      <ChartCard
+        title="Time by category (today)"
+        empty={categoryData.length === 0}
+      >
         <ResponsiveContainer width="100%" height={240}>
           <PieChart>
             <Pie
@@ -196,7 +195,11 @@ export function Analytics() {
         <ResponsiveContainer width="100%" height={240}>
           <BarChart data={hourData}>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
-            <XAxis dataKey="label" tick={axisTick} stroke="var(--color-border)" />
+            <XAxis
+              dataKey="label"
+              tick={axisTick}
+              stroke="var(--color-border)"
+            />
             <YAxis tick={axisTick} stroke="var(--color-border)" width={28} />
             <Tooltip
               contentStyle={tooltipStyle}
@@ -212,7 +215,11 @@ export function Analytics() {
         <ResponsiveContainer width="100%" height={240}>
           <BarChart data={weekData}>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
-            <XAxis dataKey="label" tick={axisTick} stroke="var(--color-border)" />
+            <XAxis
+              dataKey="label"
+              tick={axisTick}
+              stroke="var(--color-border)"
+            />
             <YAxis tick={axisTick} stroke="var(--color-border)" width={28} />
             <Tooltip
               contentStyle={tooltipStyle}
@@ -228,7 +235,11 @@ export function Analytics() {
         <ResponsiveContainer width="100%" height={240}>
           <LineChart data={weekData}>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
-            <XAxis dataKey="label" tick={axisTick} stroke="var(--color-border)" />
+            <XAxis
+              dataKey="label"
+              tick={axisTick}
+              stroke="var(--color-border)"
+            />
             <YAxis
               tick={axisTick}
               stroke="var(--color-border)"
@@ -253,54 +264,27 @@ export function Analytics() {
 
       <Card className="lg:col-span-2">
         <CardHeader>
-          <CardTitle>Daily report</CardTitle>
+          <CardTitle>Top sites (today)</CardTitle>
         </CardHeader>
-        <CardContent className="grid grid-cols-1 gap-6 sm:grid-cols-3">
-          <div>
-            <div className="text-xs text-muted-foreground">Total browsing</div>
-            <div className="text-2xl font-medium">
-              {formatDuration(totalToday)}
-            </div>
-          </div>
-          <div className="flex flex-col gap-1">
-            <div className="text-xs text-muted-foreground">Category breakdown</div>
-            {categoryData.length === 0 ? (
-              <span className="text-sm text-muted-foreground">—</span>
-            ) : (
-              categoryData.map((c) => (
-                <div
-                  key={c.name}
-                  className="flex items-center justify-between gap-2"
-                >
-                  <Badge className={categoryColor(c.name as Category).chip}>
-                    {c.name}
-                  </Badge>
-                  <span className="font-mono text-xs">{c.value}m</span>
+        <CardContent className="flex flex-col gap-1">
+          {sites.length === 0 ? (
+            <span className="text-sm text-muted-foreground">—</span>
+          ) : (
+            sites.map((s) => (
+              <div
+                key={s.domain}
+                className="flex items-center justify-between gap-2 text-sm"
+              >
+                <div className="flex min-w-0 items-center gap-2">
+                  <Favicon src={s.favIconUrl} domain={s.domain} />
+                  <span className="truncate">{s.domain}</span>
                 </div>
-              ))
-            )}
-          </div>
-          <div className="flex flex-col gap-1">
-            <div className="text-xs text-muted-foreground">Top sites</div>
-            {sites.length === 0 ? (
-              <span className="text-sm text-muted-foreground">—</span>
-            ) : (
-              sites.map((s) => (
-                <div
-                  key={s.domain}
-                  className="flex items-center justify-between gap-2 text-sm"
-                >
-                  <div className="flex min-w-0 items-center gap-2">
-                    <Favicon src={s.favIconUrl} domain={s.domain} />
-                    <span className="truncate">{s.domain}</span>
-                  </div>
-                  <span className="shrink-0 font-mono text-xs text-muted-foreground">
-                    {formatDuration(s.duration)}
-                  </span>
-                </div>
-              ))
-            )}
-          </div>
+                <span className="shrink-0 font-mono text-xs text-muted-foreground">
+                  {formatDuration(s.duration)}
+                </span>
+              </div>
+            ))
+          )}
         </CardContent>
       </Card>
     </div>

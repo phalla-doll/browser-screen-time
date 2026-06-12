@@ -27,7 +27,7 @@ export function Favicon({
         aria-hidden
         className={cn(
           base,
-          "flex items-center justify-center bg-muted text-[9px] font-semibold uppercase text-muted-foreground",
+          "flex items-center justify-center bg-muted text-[9px] font-semibold text-muted-foreground uppercase",
           className
         )}
       >

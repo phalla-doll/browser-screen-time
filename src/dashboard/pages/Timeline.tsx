@@ -154,7 +154,7 @@ export function Timeline() {
       {groups.length === 0 ? (
         <p className="text-sm text-muted-foreground">No matching visits.</p>
       ) : (
-        <div className="flex flex-col gap-5">
+        <div className="flex max-h-[70vh] flex-col gap-5 overflow-y-auto pr-1">
           {groups.map((group) => (
             <div key={group.hour} className="flex gap-4">
               <div className="w-14 shrink-0 pt-2 text-xs font-medium text-muted-foreground">

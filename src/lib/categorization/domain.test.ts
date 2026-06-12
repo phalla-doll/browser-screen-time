@@ -4,7 +4,9 @@ import { getRegistrableDomain } from "./domain"
 
 describe("getRegistrableDomain", () => {
   it("strips the www prefix", () => {
-    expect(getRegistrableDomain("https://www.github.com/foo")).toBe("github.com")
+    expect(getRegistrableDomain("https://www.github.com/foo")).toBe(
+      "github.com"
+    )
   })
 
   it("reduces subdomains to the registrable domain", () => {

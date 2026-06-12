@@ -24,7 +24,10 @@ export function deleteVisit(id: number): Promise<void> {
 
 // Visits whose start falls within [from, to), ordered chronologically.
 export function getVisitsBetween(from: number, to: number): Promise<Visit[]> {
-  return db.visits.where("startTs").between(from, to, true, false).sortBy("startTs")
+  return db.visits
+    .where("startTs")
+    .between(from, to, true, false)
+    .sortBy("startTs")
 }
 
 export function getVisitsForDay(date: Date): Promise<Visit[]> {
