@@ -65,11 +65,9 @@ function MetricCard({
 }) {
   return (
     <Card>
-      <div className="flex items-center justify-between gap-3">
-        <div className="min-w-0">
-          <CardDescription>{title}</CardDescription>
-          <CardTitle className="mt-1 text-2xl">{value}</CardTitle>
-        </div>
+      <CardDescription>{title}</CardDescription>
+      <div className="mt-1 flex items-center justify-between gap-3">
+        <CardTitle className="min-w-0 text-2xl">{value}</CardTitle>
         {accessory ? <div className="shrink-0">{accessory}</div> : null}
       </div>
       {detail ? (
