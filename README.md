@@ -20,6 +20,65 @@ Users can replay their browsing history, understand work patterns, identify dist
 
 ---
 
+## Project Status
+
+WebTimeline currently ships a **fully local, offline MVP**: activity tracking → local storage → categorization → session reconstruction → a dashboard with timeline and analytics. There is **no cloud and no AI yet** — those remain planned (see [Planned (deferred)](#planned-deferred)).
+
+Most of this document describes the long-term product vision. The sections below describe what is actually implemented today.
+
+### Implemented (Local MVP)
+
+- **Activity tracking** — a background service worker records per-page *visits* from tab, window-focus, and idle events; accrual pauses on idle/blur and resumes on focus.
+- **Local storage** — IndexedDB via Dexie; a single store shared by the worker and the UI, reactive through `useLiveQuery`.
+- **Categorization** — registrable-domain → category rules across the 8 built-in categories below; unknown domains fall back to *Uncategorized* (AI fallback is a stubbed seam).
+- **Sessions & metrics** — visits grouped into sessions (split on idle gaps > 30 min); focus score, deep-work detection, and context-switching stats — all unit-tested.
+- **Dashboard** — cards for Total Time, Focus Score, Deep Work, Top Category, and Most Visited Site.
+- **Timeline** — visits grouped by hour with category chips, plus search and category filters.
+- **Analytics** — Recharts: category donut, hourly-activity bar, 7-day daily-total bar, focus-score trend line, and a daily report.
+
+### Planned (deferred)
+
+AI categorization/insights/recommendations, Cloudflare Workers + Hono backend, cloud & multi-device sync, Flow Graph (React Flow / D3), weekly/monthly comparison reports, browser replay, team analytics, and monetization tiers. The **Insights** page is a placeholder today.
+
+---
+
+## Getting Started
+
+Prerequisites: Node.js and [pnpm](https://pnpm.io).
+
+```bash
+pnpm install     # install dependencies
+pnpm build       # type-check + bundle the extension to dist/
+pnpm dev         # vite dev server with HMR
+pnpm test        # run the vitest suite
+pnpm lint        # eslint
+pnpm typecheck   # tsc --noEmit
+pnpm icons       # regenerate icons from assets/icon/icon.svg
+```
+
+### Load the extension
+
+1. Run `pnpm build`.
+2. Open `chrome://extensions` and enable **Developer mode**.
+3. Click **Load unpacked** and select the `dist/` folder.
+4. Browse a few sites, open the dashboard from the toolbar popup, and watch the cards, timeline, and charts update live.
+
+---
+
+## Architecture
+
+- **`manifest.config.ts`** — MV3 manifest (permissions: `tabs`, `idle`, `storage`, `alarms`).
+- **`src/background/`** — service worker: activity tracking, visit accrual, periodic flush.
+- **`src/lib/db/`** — Dexie schema + repository (single source of truth).
+- **`src/lib/categorization/`** — domain extraction, rules, and `categorize()`.
+- **`src/lib/analytics/`** — pure session reconstruction and productivity metrics.
+- **`src/dashboard/`** — extension page: hash router across Dashboard, Timeline, Analytics, Insights.
+- **`src/popup/`**, **`src/options/`** — toolbar popup and settings page.
+
+Built with **Vite + `@crxjs/vite-plugin`** (MV3), **React 19**, **TypeScript**, **Tailwind v4**, **shadcn/ui**, **Dexie**, and **Recharts**.
+
+---
+
 # Core Features
 
 ## Activity Tracking
