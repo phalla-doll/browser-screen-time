@@ -20,7 +20,7 @@ import { useTodayVisits } from "../use-today"
 const ALL = "All"
 
 function hourLabel(ts: number): string {
-  return new Date(ts).toLocaleTimeString([], { hour: "2-digit" })
+  return new Date(ts).toLocaleTimeString([], { hour: "2-digit", hour12: false })
 }
 
 // A row in the timeline. Consecutive visits to the same page are folded into a
