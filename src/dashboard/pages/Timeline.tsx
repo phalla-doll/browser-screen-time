@@ -68,7 +68,9 @@ function mergeRuns(visits: Visit[]): TimelineRow[] {
   return rows
 }
 
-function groupByHour(rows: TimelineRow[]): { hour: string; rows: TimelineRow[] }[] {
+function groupByHour(
+  rows: TimelineRow[]
+): { hour: string; rows: TimelineRow[] }[] {
   const groups: { hour: string; rows: TimelineRow[] }[] = []
   for (const row of rows) {
     const hour = hourLabel(row.startTs)
@@ -107,7 +109,12 @@ export function Timeline() {
     })
   }, [visits, search, category])
 
-  const groups = useMemo(() => groupByHour(mergeRuns(filtered)), [filtered])
+  const groups = useMemo(() => {
+    // Newest first: reverse the hour groups and the rows within each group.
+    return groupByHour(mergeRuns(filtered))
+      .reverse()
+      .map((group) => ({ ...group, rows: [...group.rows].reverse() }))
+  }, [filtered])
 
   if (visits === undefined) {
     return <p className="text-sm text-muted-foreground">Loading…</p>
@@ -116,18 +123,19 @@ export function Timeline() {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center gap-2">
+        <span className="text-xs text-muted-foreground">
+          {filtered.length} visit{filtered.length === 1 ? "" : "s"}
+        </span>
         <Input
           type="search"
           value={search}
           onChange={(event) => setSearch(event.target.value)}
           placeholder="Search site or title…"
-          className="w-56"
+          className="ml-auto w-56"
         />
         <Select
           value={category}
-          onValueChange={(value) =>
-            setCategory(value as typeof ALL | Category)
-          }
+          onValueChange={(value) => setCategory(value as typeof ALL | Category)}
         >
           <SelectTrigger>
             <SelectValue />
@@ -141,9 +149,6 @@ export function Timeline() {
             ))}
           </SelectContent>
         </Select>
-        <span className="text-xs text-muted-foreground">
-          {filtered.length} visit{filtered.length === 1 ? "" : "s"}
-        </span>
       </div>
 
       {groups.length === 0 ? (
