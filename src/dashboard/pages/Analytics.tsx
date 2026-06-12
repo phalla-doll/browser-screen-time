@@ -5,6 +5,7 @@ import {
   BarChart,
   CartesianGrid,
   Cell,
+  Legend,
   Line,
   LineChart,
   Pie,
@@ -16,7 +17,7 @@ import {
 } from "recharts"
 
 import { summarizeFocus } from "@/lib/analytics/metrics"
-import { CATEGORIES } from "@/lib/categorization/categorize"
+import { CATEGORIES, type Category } from "@/lib/categorization/categorize"
 import type { Visit } from "@/lib/db/db"
 import { categoryColor } from "@/lib/category-colors"
 import { getVisitsBetween } from "@/lib/db/repository"
@@ -104,17 +105,33 @@ function lastWeekDays(): Date[] {
   })
 }
 
-function weeklyData(visits: Visit[], days: Date[]) {
+type WeekRow = { label: string; minutes: number; focusPct: number } & Record<
+  Category,
+  number
+>
+
+function weeklyData(visits: Visit[], days: Date[]): WeekRow[] {
   return days.map((day) => {
     const dayStart = day.getTime()
     const inDay = visits.filter(
       (v) => v.startTs >= dayStart && v.startTs < dayStart + DAY_MS
     )
     const focus = summarizeFocus(inDay)
+    const byCategory = Object.fromEntries(
+      CATEGORIES.map((name) => [
+        name,
+        toMin(
+          inDay
+            .filter((v) => v.category === name)
+            .reduce((sum, v) => sum + v.duration, 0)
+        ),
+      ])
+    ) as Record<Category, number>
     return {
       label: day.toLocaleDateString([], { weekday: "short" }),
       minutes: toMin(focus.totalMs),
       focusPct: Math.round(focus.focusScore * 100),
+      ...byCategory,
     }
   })
 }
@@ -163,6 +180,11 @@ export function Analytics() {
   const categoryData = sumByCategory(today)
   const hourData = sumByHour(today)
   const weekData = weeklyData(week, days)
+  // Only chart categories with activity in the window, so empty ones don't
+  // render as flat zero lines.
+  const activeCategories = CATEGORIES.filter((name) =>
+    weekData.some((d) => (d[name] as number) > 0)
+  )
   const sites = topSites(today)
 
   return (
@@ -233,7 +255,10 @@ export function Analytics() {
         </ResponsiveContainer>
       </ChartCard>
 
-      <ChartCard title="Focus score trend (last 7 days)" empty={false}>
+      <ChartCard
+        title="Time by category (last 7 days)"
+        empty={activeCategories.length === 0}
+      >
         <ResponsiveContainer width="100%" height={240}>
           <LineChart data={weekData}>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
@@ -246,20 +271,23 @@ export function Analytics() {
               tick={axisTick}
               stroke="var(--color-border)"
               width={32}
-              domain={[0, 100]}
-              unit="%"
+              unit="m"
             />
             <Tooltip
               contentStyle={tooltipStyle}
-              formatter={(value) => [`${value}%`, "Focus"]}
+              formatter={(value, name) => [`${value}m`, name]}
             />
-            <Line
-              type="monotone"
-              dataKey="focusPct"
-              stroke="#10b981"
-              strokeWidth={2}
-              dot={{ r: 3 }}
-            />
+            <Legend wrapperStyle={{ fontSize: 12 }} />
+            {activeCategories.map((name) => (
+              <Line
+                key={name}
+                type="monotone"
+                dataKey={name}
+                stroke={categoryColor(name).hex}
+                strokeWidth={2}
+                dot={false}
+              />
+            ))}
           </LineChart>
         </ResponsiveContainer>
       </ChartCard>
