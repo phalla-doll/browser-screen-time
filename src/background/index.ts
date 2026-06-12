@@ -5,6 +5,8 @@
 // registered synchronously at the top level so an evicted worker re-wakes for
 // each event.
 
+import { rebuildSessionsForDay } from "@/lib/analytics/persist"
+
 import { checkpoint, pause, resume, syncActiveTab } from "./tracker"
 
 const FLUSH_ALARM = "wt:flush"
@@ -68,7 +70,7 @@ chrome.idle.onStateChanged.addListener((state) => {
 
 chrome.alarms.onAlarm.addListener((alarm) => {
   if (alarm.name === FLUSH_ALARM) {
-    void checkpoint(now())
+    void checkpoint(now()).then(() => rebuildSessionsForDay(new Date()))
   }
 })
 
