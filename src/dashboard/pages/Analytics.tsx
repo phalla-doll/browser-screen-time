@@ -268,14 +268,14 @@ export function Analytics() {
         <CardHeader>
           <CardTitle>Top sites (today)</CardTitle>
         </CardHeader>
-        <CardContent className="flex flex-col gap-1">
+        <CardContent className="flex flex-col">
           {sites.length === 0 ? (
             <span className="text-sm text-muted-foreground">—</span>
           ) : (
             sites.map((s) => (
               <div
                 key={s.domain}
-                className="flex items-center justify-between gap-2 text-sm"
+                className="flex items-center justify-between gap-2 border-b py-2 text-sm last:border-b-0"
               >
                 <div className="flex min-w-0 items-center gap-2">
                   <Favicon src={s.favIconUrl} domain={s.domain} />

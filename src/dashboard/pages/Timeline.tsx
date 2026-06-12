@@ -189,7 +189,7 @@ export function Timeline() {
                           <span className="font-mono text-sm font-medium tabular-nums">
                             {formatDuration(row.duration)}
                           </span>
-                          <span className="font-mono text-[11px] tabular-nums text-muted-foreground">
+                          <span className="font-mono text-[11px] text-muted-foreground tabular-nums">
                             {row.count > 1
                               ? `${formatClock(row.startTs)} – ${formatClock(row.lastTs)}`
                               : formatClock(row.startTs)}
