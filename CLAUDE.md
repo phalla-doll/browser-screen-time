@@ -6,9 +6,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Browser Screen Time is a privacy-first Chromium MV3 extension that tracks browsing
 activity locally, categorizes sites, reconstructs sessions, and renders a
-timeline + analytics dashboard. It ships a **fully local, offline MVP** — there
-is **no cloud and no AI yet**. Most of `README.md` describes the long-term
-product vision; only the "Implemented (Local MVP)" section reflects what exists.
+timeline + analytics dashboard. All tracking is **fully local and offline**;
+the only thing that ever leaves the device is the **opt-in AI Insights**
+feature, which sends a day's aggregated summary to an LLM when the user
+explicitly clicks "Generate insights" (see `src/lib/insights/`). Most of
+`README.md` describes the long-term product vision; only the "Implemented (Local
+MVP)" section reflects what exists.
 
 ## Commands
 
@@ -67,12 +70,23 @@ reactive UI**. Two runtime contexts share one Dexie database:
    backfill each visit's `sessionId`). Keep DB access out of `sessions.ts`/
    `metrics.ts` — that separation is what keeps them testable.
 
-5. **Dashboard** (`src/dashboard/`) — a standalone extension page (not in the
+5. **AI Insights** (`src/lib/insights/`) — the one feature that calls out to the
+   network, and only on an explicit user click. It keeps the same pure/impure
+   split: `context.ts` (visits → aggregated `InsightContext`), `prompt.ts`, and
+   `parse.ts` are framework/DB/network-free and unit-tested; `provider.ts`
+   (NVIDIA OpenAI-compatible `fetch`) and `config.ts` (API key in
+   `chrome.storage.local`) are the impure seam; `generate.ts` orchestrates
+   context → prompt → provider → parse. The summary sent off-device is
+   aggregates + top domains only — never full URLs. Swapping the LLM means
+   satisfying `provider.ts`'s `(messages, config) → string` contract; nothing
+   else changes.
+
+6. **Dashboard** (`src/dashboard/`) — a standalone extension page (not in the
    manifest; wired as a separate Vite rollup input in `vite.config.ts`). Uses
    **hash routing** (`createHashRouter`) because it's served from a static
    `chrome-extension://` file with no server. Pages: Dashboard, Timeline,
-   Analytics, Insights (placeholder). `popup/` and `options/` are separate
-   entry points.
+   Analytics, Insights. `popup/` and `options/` are separate entry points (the
+   options page configures the AI Insights API key).
 
 ## Conventions
 
@@ -109,5 +123,7 @@ reactive UI**. Two runtime contexts share one Dexie database:
 
 `manifest.config.ts` is the MV3 manifest (crxjs reads the html/ts entry points
 and rewrites them at build time). Permissions: `tabs`, `idle`, `storage`,
-`alarms`. Idle detection is 60s; the flush alarm (`wt:flush`) fires every minute
-to checkpoint the open visit and rebuild the day's sessions.
+`alarms`, plus a `host_permissions` entry for the NVIDIA API
+(`integrate.api.nvidia.com`) used by AI Insights. Idle detection is 60s; the
+flush alarm (`wt:flush`) fires every minute to checkpoint the open visit and
+rebuild the day's sessions.

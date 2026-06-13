@@ -11,6 +11,9 @@ export default defineManifest({
   description:
     "Privacy-first browsing activity timeline, categorization & analytics. Local-only, no cloud.",
   permissions: ["tabs", "idle", "storage", "alarms"],
+  // Opt-in AI Insights call out to the NVIDIA OpenAI-compatible API. Browsing
+  // data only leaves the device when the user explicitly generates insights.
+  host_permissions: ["https://integrate.api.nvidia.com/*"],
   icons: {
     16: "icons/icon-16.png",
     32: "icons/icon-32.png",

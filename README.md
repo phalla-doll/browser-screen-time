@@ -22,7 +22,7 @@ Users can replay their browsing history, understand work patterns, identify dist
 
 ## Project Status
 
-Browser Screen Time currently ships a **fully local, offline MVP**: activity tracking → local storage → categorization → session reconstruction → a dashboard with timeline and analytics. There is **no cloud and no AI yet** — those remain planned (see [Planned (deferred)](#planned-deferred)).
+Browser Screen Time ships a **local-first MVP**: activity tracking → local storage → categorization → session reconstruction → a dashboard with timeline and analytics. All tracking stays on-device. The one feature that reaches the network is **opt-in AI Insights**, which sends an aggregated summary of a day to an LLM only when you click "Generate insights" (see [AI Insights](#ai-insights-opt-in)). The cloud backend and multi-device sync remain planned (see [Planned (deferred)](#planned-deferred)).
 
 Most of this document describes the long-term product vision. The sections below describe what is actually implemented today.
 
@@ -35,10 +35,19 @@ Most of this document describes the long-term product vision. The sections below
 - **Dashboard** — cards for Total Time, Focus Score, Deep Work, Top Category, and Most Visited Site.
 - **Timeline** — visits grouped by hour with category chips, plus search and category filters.
 - **Analytics** — Recharts: category donut, hourly-activity bar, 7-day daily-total bar, focus-score trend line, and a daily report.
+- **AI Insights (opt-in)** — the **Insights** page generates natural-language observations about the day via an LLM. See [AI Insights](#ai-insights-opt-in) below.
+
+### AI Insights (opt-in)
+
+The Insights page turns the day's metrics into short, natural-language observations ("Your longest focus block was 1h 20m"; "You bounced GitHub → YouTube 12 times"). It runs only when you click **Generate insights**, and only after you add an API key in the extension's Settings page.
+
+- **Provider** — the [NVIDIA-hosted](https://build.nvidia.com) OpenAI-compatible API (default model `openai/gpt-oss-120b`); both are configurable in Settings.
+- **What's sent** — an *aggregated* summary of the day: time totals, focus score, deep-work and context-switch stats, the top category/domain breakdown. **Full URLs are never sent.** Your API key is stored only in `chrome.storage.local` and used solely to authorize the request.
+- **Where it lives** — `src/lib/insights/`, with a pure/impure split: `context.ts`/`prompt.ts`/`parse.ts` are framework- and network-free (and unit-tested); `provider.ts`/`config.ts` are the impure seam. Swapping the LLM means satisfying `provider.ts`'s `(messages, config) → string` contract.
 
 ### Planned (deferred)
 
-AI categorization/insights/recommendations, Cloudflare Workers + Hono backend, cloud & multi-device sync, Flow Graph (React Flow / D3), weekly/monthly comparison reports, browser replay, team analytics, and monetization tiers. The **Insights** page is a placeholder today.
+AI categorization/recommendations, Cloudflare Workers + Hono backend, cloud & multi-device sync, Flow Graph (React Flow / D3), weekly/monthly comparison reports, browser replay, team analytics, and monetization tiers.
 
 ---
 
@@ -67,13 +76,14 @@ pnpm icons       # regenerate icons from assets/icon/icon.svg
 
 ## Architecture
 
-- **`manifest.config.ts`** — MV3 manifest (permissions: `tabs`, `idle`, `storage`, `alarms`).
+- **`manifest.config.ts`** — MV3 manifest (permissions: `tabs`, `idle`, `storage`, `alarms`; host permission for the NVIDIA API used by AI Insights).
 - **`src/background/`** — service worker: activity tracking, visit accrual, periodic flush.
 - **`src/lib/db/`** — Dexie schema + repository (single source of truth).
 - **`src/lib/categorization/`** — domain extraction, rules, and `categorize()`.
 - **`src/lib/analytics/`** — pure session reconstruction and productivity metrics.
+- **`src/lib/insights/`** — opt-in AI Insights: pure context/prompt/parse + the NVIDIA provider seam.
 - **`src/dashboard/`** — extension page: hash router across Dashboard, Timeline, Analytics, Insights.
-- **`src/popup/`**, **`src/options/`** — toolbar popup and settings page.
+- **`src/popup/`**, **`src/options/`** — toolbar popup and settings page (AI Insights API key).
 
 Built with **Vite + `@crxjs/vite-plugin`** (MV3), **React 19**, **TypeScript**, **Tailwind v4**, **shadcn/ui**, **Dexie**, and **Recharts**.
 
